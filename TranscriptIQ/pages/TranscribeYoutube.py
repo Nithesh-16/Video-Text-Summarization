@@ -9,7 +9,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from pyecharts.charts import WordCloud, Gauge
 from pyecharts import options as opts
 from collections import Counter
-from annotated_text import annotated_text
+from st_annotated_text import annotated_text
 from dataclasses import dataclass
 from typing import Literal
 import streamlit.components.v1 as components
