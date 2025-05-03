@@ -1,12 +1,22 @@
 import streamlit as st
 from io import BytesIO
 import os
-import nltk
+import sys
+import subprocess
+
+# Try to import nltk, if not installed, install it
+try:
+    import nltk
+except ImportError:
+    st.warning("Installing NLTK...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "nltk==3.8.1"])
+    import nltk
 
 # Download NLTK data if not already present
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
+    st.warning("Downloading NLTK data...")
     nltk.download('punkt', quiet=True)
     nltk.download('averaged_perceptron_tagger', quiet=True)
     nltk.download('maxent_ne_chunker', quiet=True)
