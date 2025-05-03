@@ -1,6 +1,16 @@
 import streamlit as st
 from io import BytesIO
 import os
+import nltk
+
+# Download NLTK data if not already present
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', quiet=True)
+    nltk.download('averaged_perceptron_tagger', quiet=True)
+    nltk.download('maxent_ne_chunker', quiet=True)
+    nltk.download('words', quiet=True)
 
 # Set page config with proper static file configuration
 st.set_page_config(
