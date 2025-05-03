@@ -246,4 +246,4 @@ if youtube_button:
     
     # Add a button to redirect to the TranscriptChat page at the end
     st.markdown("### Ask Questions About Your Transcript")
-    st.info("Click the button below to go to the Transcript Chat page where you can ask
+    st.info("Click the button below to go to the Transcript Chat page where you can ask")
