@@ -1,33 +1,6 @@
 import streamlit as st
 from io import BytesIO
 import os
-import sys
-import subprocess
-
-# Try to import nltk, if not installed, show error message
-try:
-    import nltk
-except ImportError:
-    st.error("""
-    NLTK is not installed. Please ensure NLTK is included in your requirements.txt file.
-    The app requires NLTK to function properly.
-    """)
-    st.stop()
-
-# Download NLTK data if not already present
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    try:
-        st.info("Downloading required NLTK data... This may take a moment.")
-        nltk.download('punkt', quiet=True)
-        nltk.download('averaged_perceptron_tagger', quiet=True)
-        nltk.download('maxent_ne_chunker', quiet=True)
-        nltk.download('words', quiet=True)
-        st.success("NLTK data downloaded successfully!")
-    except Exception as e:
-        st.error(f"Error downloading NLTK data: {str(e)}")
-        st.stop()
 
 # Set page config with proper static file configuration
 st.set_page_config(
