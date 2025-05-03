@@ -271,6 +271,7 @@ if youtube_button:
             </button>
         </a>
         """, unsafe_allow_html=True)
+
 def annotated_text(*args):
     """Custom implementation of annotated text"""
     text_list = []
