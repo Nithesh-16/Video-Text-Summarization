@@ -7,8 +7,8 @@ openai_whisper
 pandas==2.2.3
 plotly==5.18.0
 pyecharts==2.0.4
-pytube==10.10.0  # Adjusted version for compatibility
-st-annotated-text==1.0.0  # Updated to an available version
+pytube==9.7.3  # Compatible version
+st-annotated-text==1.0.0
 streamlit==1.42.0
 vaderSentiment==3.3.2
 yt_dlp==2024.3.10
