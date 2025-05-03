@@ -38,7 +38,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 
 # Streamlit Config
-st.set_page_config(layout="wide", page_title="Transcribe YouTube Video", page_icon=None)
+st.set_page_config(layout="wide", page_title="Transcribe YouTube Video", page_icon="🎥")
 
 # Initialize session state variables
 if "transcript_text" not in st.session_state:
@@ -75,7 +75,6 @@ def annotated_text(*args):
 # Main UI
 st.title("Transcribe YouTube Video 🎥")
 
-
 st.markdown("""
 <a href="../" target="_self">
     <button style="
@@ -91,7 +90,7 @@ st.markdown("""
         cursor: pointer;
         border-radius: 4px;
     ">
-        \u2190 Back to Home
+        ← Back to Home
     </button>
 </a>
 """, unsafe_allow_html=True)
@@ -102,7 +101,12 @@ current_directory(3)
 # YouTube Input
 video_url = st.text_input("YouTube Link", "https://www.youtube.com/watch?v=iwNO4nbmkVs")
 
-# Add segment duration option
+# Normalize shorts link
+if "youtube.com/shorts/" in video_url:
+    video_id = video_url.split("/")[-1].split("?")[0]
+    video_url = f"https://www.youtube.com/watch?v={video_id}"
+
+# Segment Duration
 segment_duration = st.slider(
     "Segment Duration (minutes)", 
     min_value=5, 
@@ -141,6 +145,11 @@ youtube_button = st.button("Transcribe")
 
 if youtube_button:
     info = get_video_info(video_url)
+
+    if not info or 'title' not in info:
+        st.error("Could not retrieve video information. Please check the YouTube link.")
+        st.stop()
+
     st.markdown(f"#### {info['title']}")
 
     grid_video = make_grid(1, 6)
@@ -162,7 +171,7 @@ if youtube_button:
         st.image(info.get('thumbnail_url', ''))
 
     if info.get("age_restricted", False):
-        st.warning("This video is age-restricted. The application will stop at this point.", icon="\u26a0\ufe0f")
+        st.warning("This video is age-restricted. The application will stop at this point.", icon="⚠️")
         st.stop()
 
     mp4_directory, mp3_directory, txt_directory = create_folder_and_directories()
@@ -171,19 +180,19 @@ if youtube_button:
         try:
             video_extension = download_youtube(video_url, mp4_directory)
         except Exception as e:
-            st.warning(f"\u26a0\ufe0f Error downloading MP4: {e}. Trying WebM format instead...")
+            st.warning(f"⚠️ Error downloading MP4: {e}. Trying WebM format instead...")
             video_extension, duration = download_youtube1(video_url, mp4_directory)
 
     video_files = [f for f in os.listdir(mp4_directory) if f.endswith((".mp4", ".mkv", ".webm"))]
     if not video_files:
-        st.error("\u274c No video file found in the downloads folder!")
+        st.error("❌ No video file found in the downloads folder!")
         st.stop()
 
     video_mp4 = os.path.join(mp4_directory, video_files[0])
-    st.write(f"\ud83d\udd0d Using video file: {video_mp4}")
+    st.write(f"🔍 Using video file: {video_mp4}")
 
     if not os.path.exists(video_mp4):
-        st.error(f"\u274c Video file not found: {video_mp4}")
+        st.error(f"❌ Video file not found: {video_mp4}")
         st.stop()
 
     rename_videos(mp4_directory)
@@ -233,13 +242,13 @@ if youtube_button:
     st.session_state["transcript_text"] = result["text"]
     st.session_state["summary"] = summarize_with_huggingface(result["text"])
 
-    st.markdown("### Sentiment Analysis \ud83d\ude03 \ud83d\ude36 \ud83d\ude21")
+    st.markdown("### Sentiment Analysis 😃 😐 😠")
     analyser = SentimentIntensityAnalyzer()
     score = analyser.polarity_scores(result["text"])
     polarity = score["compound"]
 
     st.markdown(f"#### Sentiment Score: {polarity}")
-    sentiment_text = "Positive \ud83d\ude0a" if polarity > 0 else "Neutral \ud83d\ude10" if polarity == 0 else "Negative \ud83d\ude20"
+    sentiment_text = "Positive 😊" if polarity > 0 else "Neutral 😐" if polarity == 0 else "Negative 😠"
     st.write(f"Sentiment: {sentiment_text}")
 
     st.markdown("### Ask Questions About Your Transcript")
