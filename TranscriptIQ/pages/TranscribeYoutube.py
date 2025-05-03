@@ -73,7 +73,8 @@ def annotated_text(*args):
     components.html(html, height=None)
 
 # Main UI
-st.title("Transcribe YouTube Video \ud83c\udfa5")
+st.title("Transcribe YouTube Video 🎥")
+
 
 st.markdown("""
 <a href="../" target="_self">
