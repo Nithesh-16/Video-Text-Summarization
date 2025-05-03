@@ -38,7 +38,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 
 # Streamlit Config
-sst.set_page_config(layout="wide", page_title="Transcribe YouTube Video", page_icon="T")
+st.set_page_config(layout="wide", page_title="Transcribe YouTube Video", page_icon=None)
 
 # Initialize session state variables
 if "transcript_text" not in st.session_state:
