@@ -9,10 +9,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from pyecharts.charts import WordCloud, Gauge
 from pyecharts import options as opts
 from collections import Counter
-from st_annotated_text import annotated_text
+import streamlit.components.v1 as components
 from dataclasses import dataclass
 from typing import Literal
-import streamlit.components.v1 as components
 import nltk
 try:
     nltk.data.find('tokenizers/punkt')
@@ -263,3 +262,25 @@ if youtube_button:
         </button>
     </a>
     """, unsafe_allow_html=True)
+
+def annotated_text(*args):
+    """Custom implementation of annotated text"""
+    text_list = []
+    for arg in args:
+        if isinstance(arg, str):
+            text_list.append({"text": arg})
+        elif isinstance(arg, tuple):
+            text, color = arg
+            text_list.append({"text": text, "background": color})
+    
+    html = """
+    <div style="display: inline-flex; flex-wrap: wrap; gap: 4px;">
+    """
+    for item in text_list:
+        if "background" in item:
+            html += f"""<span style="background: {item['background']}; padding: 0.2em 0.4em; border-radius: 0.3em;">{item['text']}</span>"""
+        else:
+            html += f"""<span>{item['text']}</span>"""
+    html += "</div>"
+    
+    components.html(html, height=None)
