@@ -147,34 +147,43 @@ if youtube_button:
     mp4_directory, mp3_directory, txt_directory = create_folder_and_directories()
 
     # Download Video
-    with st.spinner("Downloading YouTube video as MP4..."):
+    with st.spinner("Downloading YouTube video..."):
         try:
+            # Try downloading the video in MP4 format first
             video_extension = download_youtube(video_url, mp4_directory)
         except Exception as e:
             st.warning(f"⚠️ Error downloading MP4: {e}. Trying WebM format instead...")
-            video_extension, duration = download_youtube1(video_url, mp4_directory)
+            try:
+                # Fallback to WebM format
+                video_extension, duration = download_youtube1(video_url, mp4_directory)
+            except Exception as e2:
+                st.error(f"❌ Error downloading WebM format: {e2}. Please check the video URL or permissions.")
+                st.stop()  # Stop execution if both download attempts fail
+            else:
+                st.success("WebM format downloaded successfully.")
 
     # ✅ Ensure at least one valid video file exists
     video_files = [f for f in os.listdir(mp4_directory) if f.endswith((".mp4", ".mkv", ".webm"))]
     if not video_files:
         st.error("❌ No video file found in the downloads folder!")
-        st.stop()
+        st.stop()  # Stop if no video file exists
 
     video_mp4 = os.path.join(mp4_directory, video_files[0])
     st.write(f"🔍 Using video file: {video_mp4}")
 
+    # Ensure the file exists before proceeding
     if not os.path.exists(video_mp4):
         st.error(f"❌ Video file not found: {video_mp4}")
         st.stop()
 
-    # Rename Videos (after confirming existence)
+    # Rename video after download (this part remains as is)
     rename_videos(mp4_directory)
 
-    # Check video duration and decide whether to split into segments
+    # Proceed with video processing and transcription
     video = VideoFileClip(f"{mp4_directory}/video.{video_extension}")
     duration = video.duration
     video.close()
-    
+
     # Convert segment duration from minutes to seconds
     segment_duration_seconds = segment_duration * 60
     
@@ -237,50 +246,4 @@ if youtube_button:
     
     # Add a button to redirect to the TranscriptChat page at the end
     st.markdown("### Ask Questions About Your Transcript")
-    st.info("Click the button below to go to the Transcript Chat page where you can ask questions about your transcript.")
-    
-    # Use a direct link with query parameters instead of st.switch_page
-    encoded_transcript = urllib.parse.quote(result["text"][:1000])  # Encode first 1000 chars to avoid URL length issues
-    chat_url = f"TranscriptChat?transcript={encoded_transcript}"
-    
-    st.markdown(f"""
-    <a href="{chat_url}" target="_self">
-        <button style="
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        ">
-            ASK Queries
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
-
-def annotated_text(*args):
-    """Custom implementation of annotated text"""
-    text_list = []
-    for arg in args:
-        if isinstance(arg, str):
-            text_list.append({"text": arg})
-        elif isinstance(arg, tuple):
-            text, color = arg
-            text_list.append({"text": text, "background": color})
-    
-    html = """
-    <div style="display: inline-flex; flex-wrap: wrap; gap: 4px;">
-    """
-    for item in text_list:
-        if "background" in item:
-            html += f"""<span style="background: {item['background']}; padding: 0.2em 0.4em; border-radius: 0.3em;">{item['text']}</span>"""
-        else:
-            html += f"""<span>{item['text']}</span>"""
-    html += "</div>"
-    
-    components.html(html, height=None)
+    st.info("Click the button below to go to the Transcript Chat page where you can ask
